@@ -1,6 +1,6 @@
 # Public Domain Komi-Zyrian data
 
-- [Introduction / Table](./#public-domain-komi-zyrian-data)
+- [Introduction / Table](./README#public-domain-komi-zyrian-data)
 - [Missing books](./#missing-books)
 - [Discussion on licenses](./#discussion-on-licenses)
 - [Metadata (to be finished)](./#metadata)
