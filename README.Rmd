@@ -1,12 +1,173 @@
 # Public Domain Komi-Zyrian data
 
+```{r, results='asis'}
+library(tidyverse)
+library(stringr)
+library(xml2)
+library(glue)
+
+html <- read_html('http://wiki.fu-lab.ru/index.php/%D0%9A%D0%BE%D0%BC%D0%B8_(%D0%B7%D1%8B%D1%80%D1%8F%D0%BD%D0%B0%D0%BB%D3%A7%D0%BD)_%D0%BD%D0%B5%D0%B1%D3%A7%D0%B3_1920-1938')
+
+nodes <- html %>% xml_find_all("//tr[td/a[text()='f'] and td/a[text()='n']]")
+
+table <- nodes %>% map_df(., ~ data_frame(year = .x %>% xml_find_first('./td') %>% xml_text,
+                                          author = .x %>% xml_find_first('./td[2]') %>% xml_text,
+                                          title = .x %>% xml_find_first('./td[4]') %>% xml_text,
+                                          pdf = .x %>% xml_find_first('./td[9]/a') %>% xml_attr('href'),
+                                          fulab_url = .x %>% xml_find_first('./td[10]/a') %>% xml_attr('href')))
+
+table <- table %>% mutate_all(str_trim)
+
+fu_table <- read_csv('~/langdoc/fu_meta//10024-61195.csv')
+
+names(fu_table) <- str_replace_all(names(fu_table), '^dc.', '')
+names(fu_table) <- str_replace_all(names(fu_table), '\\.', '_')
+
+fu <- fu_table %>% 
+  unite(contributor_author1, contributor_author2, col =  author) %>%
+  unite(contributor_editor1, contributor_editor2, col =  editor) %>%
+  unite(contributor_illustrator1, contributor_illustrator2, col =  illustrator) %>%
+  unite(contributor_translator1, contributor_translator2, col =  translator) %>%
+  unite(date_created1, date_created2, col =  date_created) %>%
+  unite(date_issued1, date_issued2, col =  date_issued) %>%
+  unite(description1, description2, col =  description) %>% 
+  unite(format_extent1, format_extent2, col =  format_extent) %>% 
+  unite(identifier_uri1, identifier_uri2, col =  uri) %>% 
+  unite(identifier_urn1, identifier_urn2, col =  urn) %>% 
+  unite(identifier_other1, identifier_other2, col =  identifier_other) %>% 
+  unite(relation1, relation2, col =  relation) %>%
+  unite(language_iso1, language_iso2, language_iso3, col = iso) %>%
+  unite(language1, language2, col = language) %>%
+  unite(title1, title2, col = title) %>%
+  select(-matches('\\d'), -contains('management'), -contains('advisor'))
+
+
+fu <- as.tibble(sapply(fu,gsub,pattern="(NA_|_NA|NA_NA|_)",replacement="")) %>% filter(iso == 'kpv')
+
+fu <- fu %>% select(-coverage, -description_en, -format_extent_en, -identifier_other_en, -language_en, -relation_ispartof, -title_en)
+
+fu <- fu %>% mutate(author = strsplit(as.character(author), "\\|\\|")) %>%
+  mutate(editor = strsplit(as.character(editor), "\\|\\|")) %>%
+  mutate(illustrator = strsplit(as.character(illustrator), "\\|\\|")) %>%
+  mutate(translator = strsplit(as.character(translator), "\\|\\|")) %>%
+  select(author, editor, illustrator, translator, everything())
+
+# # Some information is lost here… The library style transliterated names are 
+# # anyway incorrect as there is mixture of Cyrillic and Molodcov
+# 
+# fu$author <- lapply(fu$author, function(x){ 
+#   if(length(x) == 0){
+#     ''
+#   } else {
+#     x[seq(1, length(x), 2)]
+#   }
+# })
+# 
+# fu$translator <- lapply(fu$translator, function(x){ 
+#   if(length(x) == 0){
+#     ''
+#   } else {
+#     x[seq(1, length(x), 2)]
+#   }
+# })
+# 
+# fu$illustrator <- lapply(fu$illustrator, function(x){ 
+#   if(length(x) == 0){
+#     ''
+#   } else {
+#     x[seq(1, length(x), 2)]
+#   }
+# })
+# 
+# fu$editor <- lapply(fu$editor, function(x){ 
+#   if(length(x) == 0){
+#     ''
+#   } else {
+#     x[seq(1, length(x), 2)]
+#   }
+# })
+
+table %>%  
+  mutate(uri = paste0('http://fennougrica.kansalliskirjasto.fi/handle/', str_extract(pdf, '\\d{5}/\\d{5}'))) %>%
+  rename(fulab_author = author,
+         fulab_title = title) %>% left_join(fu) %>% 
+  mutate(fulab_link = glue('[FU-Lab]({.$fulab_url})')) %>% 
+  mutate(fu_link = glue('[Fenno-Ugrica]({.$fulab_url})')) %>% 
+  select(year, fulab_title, fulab_author, fulab_link, fu_link) %>%
+  mutate(title = fulab_title,
+         author = fulab_author) %>% knitr::kable()
+
+
+```
+
+
+## Discussion on licenses
+
 Programmatically generated texts aside, all language data originates from an individual, and this makes linguistic data in many ways more complex to manage than data on some other scientific fields. While there is more data available than ever before, there is also extreme confusion on our field about copyrights and their implications. The practices for data publication and reuse **have not yet been firmly established**, despite continuous conversations over best practices.
 
 Open data comes in many forms and shapes. One problem is that licenses are often applied in inconsistent and nonsensical manner, and on the other hand users are not very aware about their freedoms and responsibilities. Data on Creative Commons licenses is often accompanied with No-Derivations or Non-Commercial clauses, obviously without clear understanding of what are consequences of these clauses. Almost everything is a derivation. Is it really a problem if someone earns money with something that is connected to the data? Why? And why don't you already make money with that data if it has such financial potential?
 
 It is not always understood that CC-BY already contains some dangers as well. Licenses are legally binding, and the **BY** clause indicates that we are **legally demanded** to cite our sources. For us as scientists, this should not be a matter of law at all. It is integral for our scientific work that we cite the sources we use, making all we can that our work can be examined, learned upon, replicated, verified and reproduced (these are all different things, I believe). We have to cite the sources because it is the only right thing to do. But as scientific work practices across data evolve, we will have more and more datasets which are derived from another. This means that the derived works will come with potentially endless list of authors, and we are legally bound to cite all of them. I can well imagine situations where this becomes impossible and error prone, and is in some sense non-sensical as well. 
 
-I want to envision a world where we can use the data that doesn't bind us legally to anything, but where these are questions of heart more than law.
+I want to envision a world where we can use the data that doesn't bind us legally to anything, but where these are questions of heart and ethics more than law.
+
+This public domain Komi-Zyrian corpus relates closely to Komi-Zyrian gold corpus, which is a selection of open Komi-Zyrian materials with further annotations. As far as I see, it is necessary that semi-manually annotated data is free, because we cannot justify in longer run spending time with manually annotating data that cannot be shared and made accessible. I also firmly believe that making data accessible will in some point merge with the concept of using data, as the mechanism how we access our own data has to be same as how the others would use it as well.
+
+## Metadata
+
+With the metadata I have tried to use as many public means of linked data as possible. This means that information such as writer's birth time and birth place are not encoded into database as such, but it is fetched from Komi Wikipedia or Komi Nebögain metadata. As far as I see this is the only sensible solution, since this is kind of public information which we should store only one place. The location data will be tied into OpenStreetMap in different ways. This has also the added benefit that the changes in Wikipedia and OpenStreetMap are entirely public and can be easily associated to us, which adds a new layer of transparency into our work. 
+
+This makes the metadata model somewhat more complicated than usual, but it also easens many questions. We don't need to fight with CMDI formats and argue about the standards with anyone: We use the data there is and that's it. Basically I think all arguments there are currently about these standards would dissolve entirely if we would shift from talking about data into actually using each others data.
+
+So the metadata we have available is basically following:
+
+- Publisher
+- Writer
+- Translator
+- Illustrator
+- Editor
+- Year
+- Number of pages
+- Title
+
+For the individual persons who are involved we have somewhat different set of metadata:
+
+- Name
+- Birthyear
+- Death year
+- Birth place
+- Wikipedia link
+
+I have not bothered to collect these for illustrators and editors, as I'm assuming their role in text production has been less central than with writers and translators, but who knows!
+
+## Data citation
+
+This work also is a contribution towards the discussion on linguistic data citation. I've talked about this in lots of places, although very informally, and it seems to me that lots of time when we discuss how to cite the data we are stuck into formalities. As far as I see, how we cite the data does not crucially differ from citing other electronic sources, so I don't think there is that much to discuss about. More important question is **how** we actually cite our data. I understand a large portion of linguists use Microsoft Word, but let's pretend for a moment that we live in a better world than this, and that LaTeX, RMarkdown and Jupyter Notebooks would be more the chosen standard on our field as well.
+
+So in this case I think the data citation should be done in similar manner with other citations. That is, we need something like a Bibtex file for the citations, so we can access it directly in our writing. Naturally there are some specific needs with the linguistic data, as we often want to present our cited items as glossed examples. There is also level of granularity to be discussed. We can cite a book as an physical object that exists.
+
+![Niko Partanen holding Ivan Belyx's book]()
+
+We can also cite this book as digital object in Komi Digital Library collection maintained in Syktyvkar.
+
+This is especially useful if we want to discuss some more literary aspects of this work, and be able to share with our reader easily the text that is being touched. However, things are different when we want to cite individual example sentences, since there is no conventional way to access and distinguish those from one another. Counting sentences is far from trivial, and it is always error prone when we have a larger collection of texts. Thereby we aren't necessarily referring to sentences as absolute never changing entities, but more as our current interpretation of how the text can be divided into more accessible and citable units.
+
+With this Komi-Zyrian corpus this approach has been taken, and all utterances can be accessed with their id's, which correspond to the utterance id's in the corpus data frame. But please take into account that these are not stable id's, or better to say, they are stable only within the individual Git commit hashes they belong into. The Git commit is the current interpretation, and it will be included into citations, at least when we are dealing with the development branch. In principle the versions could also be tied to different releases which would have their own DOI's and so on, this is probably a good idea and will be implemented, but it is not crucial for the concept discussed here.
+
+As explained above, the tokenization both on sentence and word level is still immature, and naturally changes here will be directly reflected to the numbering of utterances. So basically the citation form will be something like this.
+
+     Belykh, Ivan 2011 Mödlapöv, published online by FU-Lab (https://www.komikyv.org/modlapov)
+     Belykh, Ivan 2011 Mödlapöv, sentence 234, published online by FU-Lab (https://www.komikyv.org/modlapov), indexed in Komi-Zyrian Public Domain corpus by Niko Partanen (Git commit: 345938838882)
+
+One day in more distant future we will have something like:
+
+    Belykh, Ivan 2011 Mödlapöv, sentence 234, published online by FU-Lab (https://www.komikyv.org/modlapov), indexed in Komi-Zyrian Public Domain corpus by Niko Partanen, Version 1.0, DOI: 23429/2334343
+    
+There is also quite lots of data that is stored in both FU-Lab and Fenno-Ugrica collection in National Library of Finland. In these cases the both sources have to be mentioned, as they have different roles, and both have done enormous work without which we couldn't even dream about working with this data.
+
+    Belykh, Ivan 2011 Mödlapöv, sentence 234, digitalized by Fenno-Ugrica (National Library of Finland) (URL: 12345/12345), proofread and published online by FU-Lab (https://www.komikyv.org/modlapov), indexed in Komi-Zyrian Public Domain corpus by Niko Partanen, Version 1.0, DOI: 23429/2334343
+
+So as you can see there are different levels of exactness, and when we cite the original work, then the source information contains where the text is coming from. However, when we want to cite individual sentences, then we need to refer also to this derived corpus, as otherwise there would be no way to refer into individual utterances. I have not included here information about individual tokens, as I don't know if there is real need for that right now, and also it would make the Bibtex file unnecessarily large in the way it is currently implemented.
 
 ## License
 
