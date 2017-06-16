@@ -120,22 +120,12 @@ We can also examine how the tokens are distributed among different texts:
 It is also interesting to see how the data in Fenno-Ugrica is distributed among different books. This is not the best plot ever, but it shows nicely how the data is distributed among different years, each color marking different author:
 
 
-```r
-left_join(corpus, fu %>% 
-            rename(fu_id = id)) %>%
-  left_join(fu_data %>% select(fu_id, year)) %>% 
-  filter(origin == 'Fenno-Ugrica') %>%
-  ggplot(data = .,
-         aes(year, fill = title)) +
-  geom_bar() + theme(legend.position="none")
-```
-
 ```
 ## Joining, by = "fu_id"
 ## Joining, by = "fu_id"
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
+![plot of chunk books_by_years](figure/books_by_years-1.png)
 
 This corresponds nicely to Ivan Belykh data which is some 80 years newer than this.
 
