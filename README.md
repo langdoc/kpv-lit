@@ -115,16 +115,12 @@ Looks like a Komi corpus!
 
 We can also examine how the tokens are distributed among different texts:
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
+![plot of chunk data_sources](figure/data_sources-1.png)
 
 It is also interesting to see how the data in Fenno-Ugrica is distributed among different books. This is not the best plot ever, but it shows nicely how the data is distributed among different years, each color marking different author:
 
 
 ```r
-fu_data <- table %>%  
-  mutate(uri = paste0('http://fennougrica.kansalliskirjasto.fi/handle/', str_extract(pdf, '\\d{5}/\\d{5}'))) %>%
-
-
 left_join(corpus, fu %>% 
             rename(fu_id = id)) %>%
   left_join(fu_data %>% select(fu_id, year)) %>% 
@@ -135,16 +131,11 @@ left_join(corpus, fu %>%
 ```
 
 ```
-## Warning: Unknown or uninitialised column: 'x'.
+## Joining, by = "fu_id"
+## Joining, by = "fu_id"
 ```
 
-```
-## Warning: Unknown or uninitialised column: 'y'.
-```
-
-```
-## Error in eval(expr, envir, enclos): not compatible with STRSXP
-```
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
 
 This corresponds nicely to Ivan Belykh data which is some 80 years newer than this.
 
