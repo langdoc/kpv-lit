@@ -117,17 +117,11 @@ We can also examine how the tokens are distributed among different texts:
 
 ![plot of chunk data_sources](figure/data_sources-1.png)
 
-It is also interesting to see how the data in Fenno-Ugrica is distributed among different books. This is not the best plot ever, but it shows nicely how the data is distributed among different years, each color marking different author:
-
-
-```
-## Joining, by = "fu_id"
-## Joining, by = "fu_id"
-```
+It is also interesting to see how the data in Fenno-Ugrica is distributed among different books. This is not the best plot ever, but it shows nicely how the data is distributed among different years, different color segment signifying different title:
 
 ![plot of chunk books_by_years](figure/books_by_years-1.png)
 
-This corresponds nicely to Ivan Belykh data which is some 80 years newer than this.
+This corresponds nicely to Ivan Belykh data which is some 80 years newer than this. It seems that each book in the Fenno-Ugrica collection has different author, some even more than one, so there is a bit to do with organising that.
 
 ## Discussion on licenses
 
