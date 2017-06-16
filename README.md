@@ -1,8 +1,15 @@
 # Public Domain Komi-Zyrian data
 
+- [Introduction / Table](./#public-domain-komi-zyrian-data)
+- [Missing books](./#missing-books)
+- [Discussion on licenses](./#discussion-on-licenses)
+- [Metadata (to be finished)](./#metadata)
+- [Citation (to be finished)](./#data-citation)
+- [License](./#license)
+
 The table below is generated from the data on tables at page [Коми (зыряналӧн) небӧг 1920-1938 'Komi (Zyrian) books 1920-1938'](http://wiki.fu-lab.ru/index.php/%D0%9A%D0%BE%D0%BC%D0%B8_(%D0%B7%D1%8B%D1%80%D1%8F%D0%BD%D0%B0%D0%BB%D3%A7%D0%BD)_%D0%BD%D0%B5%D0%B1%D3%A7%D0%B3_1920-1938). This work is done in [The Finno-Ugric Laboratory for Support of the Electronic Representation of Regional Languages](http://fu-lab.ru/) in Syktyvkar. The data collected into this repository is combined from their [komikyv.org](http://komikyv.org/) website and [Fenno-Ugrica digical collection of the National Library of Finland](https://fennougrica.kansalliskirjasto.fi/).
 
-Another component of this repository comes from publications of Ivan Belykh, which the author [released into Public Domain](http://news.uralistica.com/?p=6383) in 2013, prior to his death.
+Another component of this repository comes from publications of Ivan Belykh, which the author [released into Public Domain](http://news.uralistica.com/?p=6383) in 2013, prior to his death. These texts are not currently in the table below, but can still be found from `txt` folder, the metadata related to each text being on the first line of the file. This will be systematized in the near future.
 
 The organizational work that this repository contains with collecting texts and checking links has been done by [Niko Partanen](https://github.com/nikopartanen) and it connects to language documentation/technology work done in Kone Foundation funded [IKDP-2](https://langdoc.github.io/IKDP-2/) project and to Niko Partanen's current work in [LATTICE laboratory](http://www.lattice.cnrs.fr/) in Paris.
 
@@ -54,6 +61,8 @@ The organizational work that this repository contains with collecting texts and 
 |1932 |Пожарицкӧй А.С.            |Видзӧй вӧр сотчӧмысь                                                                                                  |[FU-Lab](http://komikyv.org/kpv/contents/vidzoy-vor-sotchomys)                                                                                          |[Fenno-Ugrica](http://fennougrica.kansalliskirjasto.fi/handle/10024/67339) |[txt](./txt/fennougrica8793.txt)  |
 |1933 |Осипова Л.                 |Курӧг пӧжӧм да пиянсӧ дӧзьӧритӧм                                                                                      |[FU-Lab](http://komikyv.org/kpv/contents/kurog-pozhom-da-piyanso-dozoritom)                                                                             |[Fenno-Ugrica](http://fennougrica.kansalliskirjasto.fi/handle/10024/87404) |[txt](./txt/fennougrica32434.txt) |
 |1934 |Ростовскӧй И.А.            |Гӧтрасьӧм, семья да опека                                                                                             |[FU-Lab](http://komikyv.org/kpv/contents/gotrasom-semya-da-opeka)                                                                                       |[Fenno-Ugrica](http://fennougrica.kansalliskirjasto.fi/handle/10024/67969) |[txt](./txt/fennougrica10004.txt) |
+
+## Missing books
 
 There are also few works which according to FU-Lab main table are proofread, but which I have not yet found.
 
