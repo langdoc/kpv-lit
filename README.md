@@ -2,10 +2,13 @@
 
 - [Introduction / Table](https://github.com/langdoc/kpv-lit#public-domain-komi-zyrian-data)
 - [Missing books](https://github.com/langdoc/kpv-lit#missing-books)
+- [Data in numbers](https://github.com/langdoc/kpv-lit#data-in-numbers)
 - [Discussion on licenses](https://github.com/langdoc/kpv-lit#discussion-on-licenses)
 - [Metadata (to be finished)](https://github.com/langdoc/kpv-lit#metadata)
 - [Citation (to be finished)](https://github.com/langdoc/kpv-lit#data-citation)
-- [License](https://github.com/langdoc/kpv-lit#license)
+- [Data license](https://github.com/langdoc/kpv-lit#data-license)
+
+**This introductory text is released with license: CC-BY @ Niko Partanen, 2017**
 
 The table below is generated from the data on tables at page [Коми (зыряналӧн) небӧг 1920-1938 'Komi (Zyrian) books 1920-1938'](http://wiki.fu-lab.ru/index.php/%D0%9A%D0%BE%D0%BC%D0%B8_(%D0%B7%D1%8B%D1%80%D1%8F%D0%BD%D0%B0%D0%BB%D3%A7%D0%BD)_%D0%BD%D0%B5%D0%B1%D3%A7%D0%B3_1920-1938). This work is done in [The Finno-Ugric Laboratory for Support of the Electronic Representation of Regional Languages](http://fu-lab.ru/) in Syktyvkar. The data collected into this repository is combined from their [komikyv.org](http://komikyv.org/) website and [Fenno-Ugrica digical collection of the National Library of Finland](https://fennougrica.kansalliskirjasto.fi/).
 
@@ -86,9 +89,64 @@ There are also few works which according to FU-Lab main table are proofread, but
 |1932 |Попов М.                        |Ас вӧчӧм детекторнӧй радиоприёмник                                                  |[FU-Lab](http://komikyv.org/kpv/content/%D0%B0%D1%81%D0%B2%D3%A7%D1%87%D3%A7%D0%BC-%D0%B4%D0%B5%D1%82%D0%B5%D0%BA%D1%82%D0%BE%D1%80%D0%BD%D3%A7%D0%B9-%D1%80%D0%B0%D0%B4%D0%B8%D0%BE%D0%BF%D1%80%D0%B8%D1%91%D0%BC%D0%BD%D0%B8%D0%BA)                                                                                             |[Fenno-Ugrica](http://fennougrica.kansalliskirjasto.fi/handle/10024/87303) |
 |1934 |Фридман В.Г.                    |Мый вылын Му сулалӧ                                                                 |[FU-Lab](http://komikyv.org/kpv/content/%D0%BC%D1%8B%D0%B9-%D0%B2%D1%8B%D0%BB%D1%8B%D0%BD-%D0%BC%D1%83-%D1%81%D1%83%D0%BB%D0%B0%D0%BB%D3%A7)                                                                                                                                                                                      |[Fenno-Ugrica](http://fennougrica.kansalliskirjasto.fi/handle/10024/87436) |
 
+## Data in numbers
 
 
 
+At the moment corpus contains 882716 word tokens, although this is counted very fast and primitively, and there is still some tidying left. However, this is the magnitude we are speaking about. When combined with Wikipedia data, which is in CC-BY so still relatively usable, we will get above million word tokens easily.
+
+The most common tokens in the corpus are:
+
+
+|token |     n|
+|:-----|-----:|
+|да    | 22683|
+|и     | 11522|
+|оз    |  8955|
+|колӧ  |  8108|
+|вылӧ  |  6861|
+|а     |  6858|
+|нин   |  6212|
+|сійӧ  |  6185|
+|жӧ    |  5448|
+|мый   |  4995|
+
+Looks like a Komi corpus!
+
+We can also examine how the tokens are distributed among different texts:
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
+
+It is also interesting to see how the data in Fenno-Ugrica is distributed among different books. This is not the best plot ever, but it shows nicely how the data is distributed among different years, each color marking different author:
+
+
+```r
+fu_data <- table %>%  
+  mutate(uri = paste0('http://fennougrica.kansalliskirjasto.fi/handle/', str_extract(pdf, '\\d{5}/\\d{5}'))) %>%
+
+
+left_join(corpus, fu %>% 
+            rename(fu_id = id)) %>%
+  left_join(fu_data %>% select(fu_id, year)) %>% 
+  filter(origin == 'Fenno-Ugrica') %>%
+  ggplot(data = .,
+         aes(year, fill = title)) +
+  geom_bar() + theme(legend.position="none")
+```
+
+```
+## Warning: Unknown or uninitialised column: 'x'.
+```
+
+```
+## Warning: Unknown or uninitialised column: 'y'.
+```
+
+```
+## Error in eval(expr, envir, enclos): not compatible with STRSXP
+```
+
+This corresponds nicely to Ivan Belykh data which is some 80 years newer than this.
 
 ## Discussion on licenses
 
@@ -135,7 +193,7 @@ This work also is a contribution towards the discussion on linguistic data citat
 
 So in this case I think the data citation should be done in similar manner with other citations. That is, we need something like a Bibtex file for the citations, so we can access it directly in our writing. Naturally there are some specific needs with the linguistic data, as we often want to present our cited items as glossed examples. There is also level of granularity to be discussed. We can cite a book as an physical object that exists.
 
-![Niko Partanen holding Ivan Belyx's book]()
+<!-- ![Niko Partanen holding Ivan Belyx's book]() -->
 
 We can also cite this book as digital object in Komi Digital Library collection maintained in Syktyvkar.
 
@@ -158,7 +216,7 @@ There is also quite lots of data that is stored in both FU-Lab and Fenno-Ugrica 
 
 So as you can see there are different levels of exactness, and when we cite the original work, then the source information contains where the text is coming from. However, when we want to cite individual sentences, then we need to refer also to this derived corpus, as otherwise there would be no way to refer into individual utterances. I have not included here information about individual tokens, as I don't know if there is real need for that right now, and also it would make the Bibtex file unnecessarily large in the way it is currently implemented.
 
-## License
+## Data license
 
 > For transfer of copyright to the ownership of the Russian Federation no legal requirements provide for the issue of certificate of the inheritance right. In accordance with Part 2 of Article 1283 of the Civil Code of the Russian Federation (“Transfer of Exclusive right to the Work by Inheritance”): “In cases indicated in Article 1151 of this Code the exclusive right to the work included in the structure of heritage is terminated, and the work transfers to public domain”. The transfer of the work to public domain means that such work by virtue of Article 1282 of the Civil Code of the Russian Federation may be used freely by any person without any consent or authorization and without payment of royalty fee. With that, the authorship, author’s name and the integrity of the work are retained. Thanks to the activity of the National Library Resource, it managed to documentarily prove the fact that the copyright to the Publications belongs to ownerless property (escheat), with regard to which the procedure of the use of works which fell into public domain is implemented. Certificate is available in http://s1.doria.fi/ohje/fennougrica_licence_text.htm
 
