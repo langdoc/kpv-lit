@@ -52,13 +52,6 @@
 There are also few works which according to FU-Lab main table are proofread, but which I have not yet found.
 
 
-```r
-fu_data %>% 
-  left_join(ids) %>% 
-  filter(is.na(filename)) %>%
-  knitr::kable()
-```
-
 ```
 ## Joining, by = "fu_id"
 ```
