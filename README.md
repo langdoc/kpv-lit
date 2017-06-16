@@ -1,11 +1,11 @@
 # Public Domain Komi-Zyrian data
 
-- [Introduction / Table](./README#public-domain-komi-zyrian-data)
-- [Missing books](./#missing-books)
-- [Discussion on licenses](./#discussion-on-licenses)
-- [Metadata (to be finished)](./#metadata)
-- [Citation (to be finished)](./#data-citation)
-- [License](./#license)
+- [Introduction / Table](https://github.com/langdoc/kpv-lit#public-domain-komi-zyrian-data)
+- [Missing books](https://github.com/langdoc/kpv-lit#missing-books)
+- [Discussion on licenses](https://github.com/langdoc/kpv-lit#discussion-on-licenses)
+- [Metadata (to be finished)](https://github.com/langdoc/kpv-lit#metadata)
+- [Citation (to be finished)](https://github.com/langdoc/kpv-lit#data-citation)
+- [License](https://github.com/langdoc/kpv-lit#license)
 
 The table below is generated from the data on tables at page [Коми (зыряналӧн) небӧг 1920-1938 'Komi (Zyrian) books 1920-1938'](http://wiki.fu-lab.ru/index.php/%D0%9A%D0%BE%D0%BC%D0%B8_(%D0%B7%D1%8B%D1%80%D1%8F%D0%BD%D0%B0%D0%BB%D3%A7%D0%BD)_%D0%BD%D0%B5%D0%B1%D3%A7%D0%B3_1920-1938). This work is done in [The Finno-Ugric Laboratory for Support of the Electronic Representation of Regional Languages](http://fu-lab.ru/) in Syktyvkar. The data collected into this repository is combined from their [komikyv.org](http://komikyv.org/) website and [Fenno-Ugrica digical collection of the National Library of Finland](https://fennougrica.kansalliskirjasto.fi/).
 
