@@ -7,8 +7,8 @@ Public Domain Komi-Zyrian data
     <!--- [Data in numbers](https://github.com/langdoc/kpv-lit#data-in-numbers)
     - [Discussion on licenses](https://github.com/langdoc/kpv-lit#discussion-on-licenses)
     - [Metadata (to be finished)](https://github.com/langdoc/kpv-lit#metadata)
-    - [Citation (to be finished)](https://github.com/langdoc/kpv-lit#data-citation)-->
--   [Data license](https://github.com/langdoc/kpv-lit#data-license)
+    - [Citation (to be finished)](https://github.com/langdoc/kpv-lit#data-citation)
+    - [Data license](https://github.com/langdoc/kpv-lit#data-license)-->
 
 The table below is generated from the data on tables at page [Коми
 (зыряналӧн) небӧг 1920-1938 'Komi (Zyrian) books
