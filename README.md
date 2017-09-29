@@ -676,24 +676,3 @@ There is also quite lots of data that is stored in both FU-Lab and Fenno-Ugrica 
 So as you can see there are different levels of exactness, and when we cite the original work, then the source information contains where the text is coming from. However, when we want to cite individual sentences, then we need to refer also to this derived corpus, as otherwise there would be no way to refer into individual utterances. I have not included here information about individual tokens, as I don't know if there is real need for that right now, and also it would make the Bibtex file unnecessarily large in the way it is currently implemented.
 
 -->
-Data license
-------------
-
-> For transfer of copyright to the ownership of the Russian Federation
-> no legal requirements provide for the issue of certificate of the
-> inheritance right. In accordance with Part 2 of Article 1283 of the
-> Civil Code of the Russian Federation (“Transfer of Exclusive right to
-> the Work by Inheritance”): “In cases indicated in Article 1151 of this
-> Code the exclusive right to the work included in the structure of
-> heritage is terminated, and the work transfers to public domain”. The
-> transfer of the work to public domain means that such work by virtue
-> of Article 1282 of the Civil Code of the Russian Federation may be
-> used freely by any person without any consent or authorization and
-> without payment of royalty fee. With that, the authorship, author’s
-> name and the integrity of the work are retained. Thanks to the
-> activity of the National Library Resource, it managed to documentarily
-> prove the fact that the copyright to the Publications belongs to
-> ownerless property (escheat), with regard to which the procedure of
-> the use of works which fell into public domain is implemented.
-> Certificate is available in
-> <http://s1.doria.fi/ohje/fennougrica_licence_text.htm>
