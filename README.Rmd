@@ -1,12 +1,28 @@
 # Public Domain Komi-Zyrian data
 
-```{r, results='asis'}
+- [Introduction / Table](https://github.com/langdoc/kpv-lit#public-domain-komi-zyrian-data)
+- [Missing books](https://github.com/langdoc/kpv-lit#missing-books)
+<!--- [Data in numbers](https://github.com/langdoc/kpv-lit#data-in-numbers)
+- [Discussion on licenses](https://github.com/langdoc/kpv-lit#discussion-on-licenses)
+- [Metadata (to be finished)](https://github.com/langdoc/kpv-lit#metadata)
+- [Citation (to be finished)](https://github.com/langdoc/kpv-lit#data-citation)-->
+- [Data license](https://github.com/langdoc/kpv-lit#data-license)
+
+**This introductory text is released with license: CC-BY @ Niko Partanen, 2017**
+
+The table below is generated from the data on tables at page [Коми (зыряналӧн) небӧг 1920-1938 'Komi (Zyrian) books 1920-1938'](http://wiki.fu-lab.ru/index.php/%D0%9A%D0%BE%D0%BC%D0%B8_(%D0%B7%D1%8B%D1%80%D1%8F%D0%BD%D0%B0%D0%BB%D3%A7%D0%BD)_%D0%BD%D0%B5%D0%B1%D3%A7%D0%B3_1920-1938). This work is done in [The Finno-Ugric Laboratory for Support of the Electronic Representation of Regional Languages](http://fu-lab.ru/) in Syktyvkar. The data collected into this repository is combined from their [komikyv.org](http://komikyv.org/) website and [Fenno-Ugrica digical collection of the National Library of Finland](https://fennougrica.kansalliskirjasto.fi/).
+
+Another component of this repository comes from publications of Ivan Belykh, which the author [released into Public Domain](http://news.uralistica.com/?p=6383) in 2013, prior to his death. These texts are not currently in the table below, but can still be found from `txt` folder, the metadata related to each text being on the first line of the file. This will be systematized in the near future.
+
+The organizational work that this repository contains with collecting texts and checking links has been done by [Niko Partanen](https://github.com/nikopartanen) and it connects to language documentation/technology work done in Kone Foundation funded [IKDP-2](https://langdoc.github.io/IKDP-2/) project and to Niko Partanen's current work in [LATTICE laboratory](http://www.lattice.cnrs.fr/) in Paris.
+
+```{r, results='asis', echo=FALSE, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(stringr)
 library(xml2)
 library(glue)
 
-html <- read_html('http://wiki.fu-lab.ru/index.php/%D0%9A%D0%BE%D0%BC%D0%B8_(%D0%B7%D1%8B%D1%80%D1%8F%D0%BD%D0%B0%D0%BB%D3%A7%D0%BD)_%D0%BD%D0%B5%D0%B1%D3%A7%D0%B3_1920-1938')
+html <- read_html('Коми (зыряналӧн) небӧг 1920-1938 — Wiki FU-Lab.html')
 
 nodes <- html %>% xml_find_all("//tr[td/a[text()='f'] and td/a[text()='n']]")
 
@@ -87,33 +103,120 @@ fu <- fu %>% mutate(author = strsplit(as.character(author), "\\|\\|")) %>%
 #   }
 # })
 
-table %>%  
+ids <- dir('txt/') %>% map_df(., ~ data_frame(fu_id = str_extract(.x, '\\d+'),
+                                                            filename = .x))
+
+fu_data <- table %>%  
   mutate(uri = paste0('http://fennougrica.kansalliskirjasto.fi/handle/', str_extract(pdf, '\\d{5}/\\d{5}'))) %>%
   rename(fulab_author = author,
          fulab_title = title) %>% left_join(fu) %>% 
   mutate(fulab_link = glue('[FU-Lab]({.$fulab_url})')) %>% 
-  mutate(fu_link = glue('[Fenno-Ugrica]({.$fulab_url})')) %>% 
-  select(year, fulab_title, fulab_author, fulab_link, fu_link) %>%
-  mutate(title = fulab_title,
-         author = fulab_author) %>% knitr::kable()
+  mutate(fu_link = glue('[Fenno-Ugrica]({.$uri})')) %>% 
+  select(-title, -author) %>%
+  rename(title = fulab_title,
+         author = fulab_author,
+         fu_id = id) %>%
+  select(year, author, title, fu_id, fulab_link, fu_link)
 
+fu_data %>% 
+  left_join(ids) %>% 
+  filter(! is.na(filename)) %>%
+  mutate(GitHub = glue('[txt](./txt/{.$filename})')) %>%
+  select(-filename, -fu_id) %>%
+  knitr::kable()
 
 ```
 
+## Missing books
+
+There are also few works which according to FU-Lab main table are proofread, but which I have not yet found.
+
+```{r, echo=FALSE}
+
+fu_data %>% 
+  left_join(ids, by = 'fu_id') %>% 
+  filter(is.na(filename)) %>%
+  select(-filename, -fu_id) %>%
+  knitr::kable()
+
+```
+
+<!--
+
+## Data in numbers
+
+```{r, echo=F}
+library(tidytext)
+
+corpus <- dir('txt', full.names = TRUE) %>% map_df(., ~ data_frame(line = read_lines(.x),
+                      fu_id = str_extract(.x, '\\d+'),
+                      filename = .x)) %>%
+  unnest_tokens('token', 'line') %>%
+  mutate(origin = ifelse(str_detect(filename, 'fennougrica'), 'Fenno-Ugrica', 'Ivan Belykh')) 
+```
+
+At the moment corpus contains `r nrow(corpus)` word tokens, although this is counted very fast and primitively, and there is still some tidying left. However, this is the magnitude we are speaking about. When combined with Wikipedia data, which is in CC-BY so still relatively usable, we will get above million word tokens easily.
+
+The most common tokens in the corpus are:
+
+```{r, echo=FALSE}
+corpus %>% count(token) %>% arrange(desc(n)) %>% slice(1:10) %>% knitr::kable()
+```
+
+Looks like a Komi corpus!
+
+We can also examine how the tokens are distributed among different texts:
+
+```{r data_sources, echo=FALSE}
+library(ggplot2)
+library(scales)
+
+ggplot(data = corpus,
+       aes(origin)) +
+  geom_bar() +
+  scale_y_continuous(labels = comma)
+```
+
+It is also interesting to see how the data in Fenno-Ugrica is distributed among different books. This is not the best plot ever, but it shows nicely how the data is distributed among different years, different color segment signifying different title:
+
+```{r books_by_years, echo=FALSE, warning=FALSE, message=FALSE}
+
+fu_corpus <- left_join(corpus, fu %>% 
+            rename(fu_id = id)) %>%
+  left_join(fu_data %>% select(fu_id, year)) %>% 
+  filter(origin == 'Fenno-Ugrica')
+
+unique_titles <- fu_corpus %>% distinct(title) %>% nrow()
+unique_writers <- fu_corpus %>% distinct(author) %>% nrow()
+title_palette <- rep(c("blue", "red"), length.out = unique_titles)
+
+ggplot(data = fu_corpus,
+         aes(year, fill = title)) +
+  geom_bar() + 
+  theme(legend.position="none") +
+  scale_fill_manual(values=title_palette)
+
+```
+
+This corresponds nicely to Ivan Belykh data which is some 80 years newer than this. It seems that each book in the Fenno-Ugrica collection has different author, some even more than one, so there is a bit to do with organising that.
 
 ## Discussion on licenses
 
-Programmatically generated texts aside, all language data originates from an individual, and this makes linguistic data in many ways more complex to manage than data on some other scientific fields. While there is more data available than ever before, there is also extreme confusion on our field about copyrights and their implications. The practices for data publication and reuse **have not yet been firmly established**, despite continuous conversations over best practices.
+Programmatically generated texts aside, all language data originates from an individual, and this makes linguistic data in many ways more complex to manage than data on some other scientific fields. While there is more data available than ever before, there is also extreme confusion on our field about copyrights and their implications. The practices for data publication and reuse **have not yet been firmly established**, despite continuous conversations over best practices. In some sense the needs of linguists are similar as on social sciences, and some practices developed there can be readily adopted, but many cannot. It seems obvious to me that especially the newest ideas about personal privacy protection in EU will not be compatible with the work we do in remote and culturally very different communities where endangered languages are spoken. We work in very close connection with these communities, and see significant effort to guarantee that the privacy of everyone is respected, but I think that especially the demands on anonymity is plainly impossible to follow, and generally goes against the nature of linguistic data. Audio can never be made anonymous. But we have to be able to share the data we use, or otherwise we can all just stop whatever we are doing.
 
-Open data comes in many forms and shapes. One problem is that licenses are often applied in inconsistent and nonsensical manner, and on the other hand users are not very aware about their freedoms and responsibilities. Data on Creative Commons licenses is often accompanied with No-Derivations or Non-Commercial clauses, obviously without clear understanding of what are consequences of these clauses. Almost everything is a derivation. Is it really a problem if someone earns money with something that is connected to the data? Why? And why don't you already make money with that data if it has such financial potential?
+In this continuously tightening environment actually free data feels very refreshing. The topic is not debated, as far as I see, probably because it is easier and safer for everyone just to comply no matter how insane the demands are.
 
-It is not always understood that CC-BY already contains some dangers as well. Licenses are legally binding, and the **BY** clause indicates that we are **legally demanded** to cite our sources. For us as scientists, this should not be a matter of law at all. It is integral for our scientific work that we cite the sources we use, making all we can that our work can be examined, learned upon, replicated, verified and reproduced (these are all different things, I believe). We have to cite the sources because it is the only right thing to do. But as scientific work practices across data evolve, we will have more and more datasets which are derived from another. This means that the derived works will come with potentially endless list of authors, and we are legally bound to cite all of them. I can well imagine situations where this becomes impossible and error prone, and is in some sense non-sensical as well. 
+Open data comes in many forms and shapes. One problem is that licenses are often applied in inconsistent and nonsensical manner, and on the other hand users are not very aware about their freedoms and responsibilities. Data on Creative Commons licenses is often accompanied with No-Derivations or Non-Commercial clauses, obviously without clear understanding of what are consequences of these clauses. Almost everything is a derivation. Is it really a problem if someone earns money with something that is connected to the data? Why? And why don't you already make money with that data if it has such financial potential? As far as I see, the real problem is not misuse of data, but the epidemic lack of use.
 
-I want to envision a world where we can use the data that doesn't bind us legally to anything, but where these are questions of heart and ethics more than law.
+It is not always understood that CC-BY already contains some dangers as well. Licenses are legally binding, and the **BY** clause indicates that we are **legally demanded** to cite our sources. For us as scientists, this should not be a matter of law at all. It is integral for our scientific work that we cite the sources we use, making all we can that our work can be examined, learned upon, replicated, verified and reproduced (these are all different things, I believe). We have to cite the sources because it is the only right thing to do. But as scientific work practices with research data evolve, we will have more and more datasets which are derived from another. This means that the derived works will come with potentially endless list of authors, and we are legally bound to cite all of them. I can well imagine situations where this becomes impossible and error prone, and is in some sense non-sensical as well. 
 
-This public domain Komi-Zyrian corpus relates closely to Komi-Zyrian gold corpus, which is a selection of open Komi-Zyrian materials with further annotations. As far as I see, it is necessary that semi-manually annotated data is free, because we cannot justify in longer run spending time with manually annotating data that cannot be shared and made accessible. I also firmly believe that making data accessible will in some point merge with the concept of using data, as the mechanism how we access our own data has to be same as how the others would use it as well.
+I want to envision a world where we can use the data that doesn't bind us legally to anything, but where these are questions of heart and ethics more than law. We should just be able to use this data easily to solve pressing linguistic questions, citation issues being resolved rather automatically on the background.
+
+This public domain Komi-Zyrian corpus relates closely to Komi-Zyrian gold corpus, which is a selection of open Komi-Zyrian materials with further annotations. As far as I see, it is necessary that semi-manually annotated data is free, because we cannot justify in longer run spending time manually annotating data that cannot be shared and made accessible. I also firmly believe that making data accessible will in some point merge with the concept of using data, as the mechanism how we access our own data has to be same as how the others would use it as well.
 
 ## Metadata
+
+**This section is unfinished!**
 
 With the metadata I have tried to use as many public means of linked data as possible. This means that information such as writer's birth time and birth place are not encoded into database as such, but it is fetched from Komi Wikipedia or Komi Nebögain metadata. As far as I see this is the only sensible solution, since this is kind of public information which we should store only one place. The location data will be tied into OpenStreetMap in different ways. This has also the added benefit that the changes in Wikipedia and OpenStreetMap are entirely public and can be easily associated to us, which adds a new layer of transparency into our work. 
 
@@ -142,11 +245,36 @@ I have not bothered to collect these for illustrators and editors, as I'm assumi
 
 ## Data citation
 
+**This section is unfinished!**
+
+```{r, echo=FALSE, eval=FALSE}
+fu_corpus %>% 
+  distinct(filename, author, editor, illustrator, translator) %>%
+  split(.$filename) %>%
+  map_df(., ~ .x %>% mutate(author = unlist(author)[1],
+                            editor = unlist(editor)[1]))
+
+  mutate(AUTHOR = str_replace_all(author_cyr, '(,| /)', ' and ')) %>% 
+  mutate(Bibtexkey = paste0('fennougrica', id),
+         Category = 'Book') %>% 
+  select(-id, -date_issued, -description, -language, -author_cyr, -fulab_exists) %>%
+  rename(title_orig = title,
+         fennougrica_pdf = pdf,
+         title_rus = relation,
+         Year = year)
+
+bib2df::df2bib(fu_bib, 'test.bib')
+```
+
+
 This work also is a contribution towards the discussion on linguistic data citation. I've talked about this in lots of places, although very informally, and it seems to me that lots of time when we discuss how to cite the data we are stuck into formalities. As far as I see, how we cite the data does not crucially differ from citing other electronic sources, so I don't think there is that much to discuss about. More important question is **how** we actually cite our data. I understand a large portion of linguists use Microsoft Word, but let's pretend for a moment that we live in a better world than this, and that LaTeX, RMarkdown and Jupyter Notebooks would be more the chosen standard on our field as well.
 
 So in this case I think the data citation should be done in similar manner with other citations. That is, we need something like a Bibtex file for the citations, so we can access it directly in our writing. Naturally there are some specific needs with the linguistic data, as we often want to present our cited items as glossed examples. There is also level of granularity to be discussed. We can cite a book as an physical object that exists.
 
-![Niko Partanen holding Ivan Belyx's book]()
+-->
+<!-- ![Niko Partanen holding Ivan Belyx's book]() -->
+
+<!--
 
 We can also cite this book as digital object in Komi Digital Library collection maintained in Syktyvkar.
 
@@ -169,7 +297,9 @@ There is also quite lots of data that is stored in both FU-Lab and Fenno-Ugrica 
 
 So as you can see there are different levels of exactness, and when we cite the original work, then the source information contains where the text is coming from. However, when we want to cite individual sentences, then we need to refer also to this derived corpus, as otherwise there would be no way to refer into individual utterances. I have not included here information about individual tokens, as I don't know if there is real need for that right now, and also it would make the Bibtex file unnecessarily large in the way it is currently implemented.
 
-## License
+-->
+
+## Data license
 
 > For transfer of copyright to the ownership of the Russian Federation no legal requirements provide for the issue of certificate of the inheritance right. In accordance with Part 2 of Article 1283 of the Civil Code of the Russian Federation (“Transfer of Exclusive right to the Work by Inheritance”): “In cases indicated in Article 1151 of this Code the exclusive right to the work included in the structure of heritage is terminated, and the work transfers to public domain”. The transfer of the work to public domain means that such work by virtue of Article 1282 of the Civil Code of the Russian Federation may be used freely by any person without any consent or authorization and without payment of royalty fee. With that, the authorship, author’s name and the integrity of the work are retained. Thanks to the activity of the National Library Resource, it managed to documentarily prove the fact that the copyright to the Publications belongs to ownerless property (escheat), with regard to which the procedure of the use of works which fell into public domain is implemented. Certificate is available in http://s1.doria.fi/ohje/fennougrica_licence_text.htm
 
