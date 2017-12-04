@@ -70,41 +70,6 @@ fu <- fu %>% mutate(author = strsplit(as.character(author), "\\|\\|")) %>%
   mutate(translator = strsplit(as.character(translator), "\\|\\|")) %>%
   select(author, editor, illustrator, translator, everything())
 
-# # Some information is lost here… The library style transliterated names are 
-# # anyway incorrect as there is mixture of Cyrillic and Molodcov
-# 
-# fu$author <- lapply(fu$author, function(x){ 
-#   if(length(x) == 0){
-#     ''
-#   } else {
-#     x[seq(1, length(x), 2)]
-#   }
-# })
-# 
-# fu$translator <- lapply(fu$translator, function(x){ 
-#   if(length(x) == 0){
-#     ''
-#   } else {
-#     x[seq(1, length(x), 2)]
-#   }
-# })
-# 
-# fu$illustrator <- lapply(fu$illustrator, function(x){ 
-#   if(length(x) == 0){
-#     ''
-#   } else {
-#     x[seq(1, length(x), 2)]
-#   }
-# })
-# 
-# fu$editor <- lapply(fu$editor, function(x){ 
-#   if(length(x) == 0){
-#     ''
-#   } else {
-#     x[seq(1, length(x), 2)]
-#   }
-# })
-
 ids <- dir('txt/') %>% map_df(., ~ data_frame(fu_id = str_extract(.x, '\\d+'),
                                                             filename = .x))
 
