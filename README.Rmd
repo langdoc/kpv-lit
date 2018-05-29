@@ -83,13 +83,30 @@ fu_data <- table %>%
   rename(title = fulab_title,
          author = fulab_author,
          fu_id = id) %>%
-  select(year, author, title, fu_id, fulab_link, fu_link)
+  select(year, author, translator, title, fu_id, fulab_link, fu_link)
 
-fu_data %>% 
+fu_data$translator <- lapply(fu_data$translator, function(x){ 
+  if(length(x) == 0){
+    ''
+  } else {
+    x[seq(1, length(x), 2)]
+  }
+})
+
+# fu_data %>%
+#   unnest(translator) %>%
+#   left_join(ids) %>% 
+#   filter(! is.na(filename)) %>%
+#   mutate(GitHub = glue('[txt](./txt/{.$filename})')) %>%
+#   select(year, author, translator, title, filename, fu_id) %>%
+#   write_tsv("meta.tsv")
+
+fu_data %>%
+  unnest(translator) %>%
   left_join(ids) %>% 
   filter(! is.na(filename)) %>%
   mutate(GitHub = glue('[txt](./txt/{.$filename})')) %>%
-  select(-filename, -fu_id) %>%
+  select(year, author, translator, title, fulab_link, fu_link, GitHub, -filename, -fu_id) %>%
   knitr::kable()
 
 ```
