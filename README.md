@@ -4,6 +4,7 @@ Public Domain Komi-Zyrian data
 -   [Introduction /
     Table](https://github.com/langdoc/kpv-lit#public-domain-komi-zyrian-data)
 -   [Missing books](https://github.com/langdoc/kpv-lit#missing-books)
+-   [Things to do](https://github.com/langdoc/kpv-lit#things-to-do)
     <!--- [Data in numbers](https://github.com/langdoc/kpv-lit#data-in-numbers)
     - [Discussion on licenses](https://github.com/langdoc/kpv-lit#discussion-on-licenses)
     - [Metadata (to be finished)](https://github.com/langdoc/kpv-lit#metadata)
@@ -20,20 +21,18 @@ their [komikyv.org](http://komikyv.org/) website and [Fenno-Ugrica
 digical collection of the National Library of
 Finland](https://fennougrica.kansalliskirjasto.fi/).
 
-Another component of this repository comes from publications of Ivan
-Belykh, which the author [released into Public
-Domain](http://news.uralistica.com/?p=6383) in 2013, prior to his death.
-These texts are not currently in the table below, but can still be found
-from `txt` folder, the metadata related to each text being on the first
-line of the file. This will be systematized in the near future.
+Ivan Belykh’s books, which the author apparently released into Public
+Domain prior to his death, are not currently included as the license has
+not been so formally defined that we could be 100% certain about which
+license should be applied.
 
 The organizational work that this repository contains with collecting
 texts and checking links has been done by [Niko
 Partanen](https://github.com/nikopartanen) and it connects to language
 documentation/technology work done in Kone Foundation funded
 [IKDP-2](https://langdoc.github.io/IKDP-2/) project and to Niko
-Partanen’s current work in [LATTICE
-laboratory](http://www.lattice.cnrs.fr/) in Paris.
+Partanen’s time as a visiting researcher in [LATTICE
+laboratory](http://www.lattice.cnrs.fr/) in Paris during 2017-2018.
 
 <table>
 <thead>
@@ -627,6 +626,15 @@ proofread, but which I have not yet found.
 </tbody>
 </table>
 
+Things to do
+------------
+
+-   Adding corpus clearly into Zenodo
+-   Some texts had duplicates, which were removed after commit
+    806df26ae898662159121b51a624e85ee589aed0. This influences the token
+    count and everything, although magnitude of size is approximately
+    the same.
+
 <!--
 
 ## Data in numbers
@@ -636,23 +644,23 @@ proofread, but which I have not yet found.
 ## Warning: package 'tidytext' was built under R version 3.4.3
 ```
 
-At the moment corpus contains 696598 word tokens, although this is counted very fast and primitively, and there is still some tidying left. However, this is the magnitude we are speaking about. When combined with Wikipedia data, which is in CC-BY so still relatively usable, we will get above million word tokens easily.
+At the moment corpus contains 389985 word tokens, although this is counted very fast and primitively, and there is still some tidying left. However, this is the magnitude we are speaking about. When combined with Wikipedia data, which is in CC-BY so still relatively usable, we will get above million word tokens easily.
 
 The most common tokens in the corpus are:
 
 
 token        n
 ------  ------
-да       18289
-и        10383
-оз        6372
-а         6121
-нин       5406
-сійӧ      5257
-вылӧ      5194
-колӧ      4938
-мый       4570
-жӧ        4555
+да       10063
+колӧ      4392
+оз        4219
+вылӧ      3232
+сійӧ      2736
+кӧ        2562
+и         2399
+зэв       2088
+уна       2055
+жӧ        1897
 
 Looks like a Komi corpus!
 
