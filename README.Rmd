@@ -131,6 +131,12 @@ fu_data %>%
 - Adding corpus clearly into Zenodo
 - Some texts had duplicates, which were removed after commit 806df26ae898662159121b51a624e85ee589aed0. This influences the token count and everything, although magnitude of size is approximately the same.
 
+## Analysis files
+
+File `unknown_words_with_count.txt` contains words not currently found with Giellatekno's Komi-Zyrian analyser. In some point this should be systematized so that the revision would be clearly indicated. The file was generated with following command: 
+
+    cat txt/* | preprocess | lookup -q $GTLANG_kpv/src/analyser-gt-desc.xfst | grep '+?' | gawk '{print $1}' | sort| uniq -c | sort -rnb > unknown_words_with_count.txt
+
 <!--
 
 ## Data in numbers
